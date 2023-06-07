@@ -1,15 +1,23 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config();
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.post("/register", (req, res) => {
+mongoose.connect(`${process.env.MONGODB_CONNECTION_STRING}`);
+
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
-  res.json({ requestData: { username, password } });
+
+  try {
+    const userDocument = await username.create({ username, password });
+    res.json(userDocument);
+  } catch (e) {}
+  res.status(400).json(e);
 });
 
-app.listen(8080);
-
-// mongodb+srv://jeremyzeyuliu:FotoPie666@cluster0.h92dy9e.mongodb.net/
+app.listen(process.env.SERVER_PORT);
