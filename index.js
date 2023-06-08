@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use(express.json());
 
 // MongoDB connection
@@ -53,12 +53,12 @@ app.post("/login", async (req, res) => {
           {},
           (error, token) => {
             if (error) throw error;
-            res.json(token);
+            res.cookie("token", token).json("ok");
           }
         )
       : res.status(400).json("Invalid username or password. Please try again.");
   } catch (e) {
-    res.status(200).json("User does not exist. Please register first.");
+    res.status(200).json("Invalid username or password. Please try again.");
   }
 });
 
