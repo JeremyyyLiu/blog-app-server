@@ -82,6 +82,7 @@ app.post("/logout", (req, res) => {
   res.cookie("token", "").json("ok");
 });
 
+// Create post controller
 app.post("/post", async (req, res) => {
   const { title, body } = req.body;
 
