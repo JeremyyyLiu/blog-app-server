@@ -53,13 +53,32 @@ app.post("/login", async (req, res) => {
           {},
           (error, token) => {
             if (error) throw error;
-            res.cookie("token", token).json("ok");
+            res.cookie("token", token).json({
+              id: userDocument._id,
+              username,
+            });
           }
         )
       : res.status(400).json("Invalid username or password. Please try again.");
   } catch (e) {
     res.status(200).json("Invalid username or password. Please try again.");
   }
+});
+
+// Profile controller
+app.get("/profile", (req, res) => {
+  const { token } = req.cookies;
+
+  // Verify JWT token
+  jwt.verify(token, process.env.JWT_SECRET_KEY, {}, (err, info) => {
+    if (err) throw err;
+    res.json(info);
+  });
+});
+
+// Logout controller
+app.post("/logout", (req, res) => {
+  res.cookie("token", "").json("ok");
 });
 
 // Server port
