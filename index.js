@@ -66,32 +66,32 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Profile controller
-app.get("/profile", (req, res) => {
-  const { token } = req.cookies;
-
-  // Verify JWT token
-  jwt.verify(token, process.env.JWT_SECRET_KEY, {}, (err, info) => {
-    if (err) throw err;
-    res.json(info);
-  });
-});
-
-// Logout controller
-app.post("/logout", (req, res) => {
-  res.cookie("token", "").json("ok");
-});
-
 // Create post controller
 app.post("/post", async (req, res) => {
   const { title, body } = req.body;
+  const { token } = req.cookies;
 
-  const postDocument = await Post.create({
-    title,
-    body,
+  jwt.verify(token, process.env.JWT_SECRET_KEY, {}, async (err, info) => {
+    if (err) throw err;
+
+    const postDocument = await Post.create({
+      title,
+      body,
+      author: info.id,
+    });
+
+    res.json(postDocument);
   });
+});
 
-  res.json(postDocument);
+// Get all posts controller
+app.get("/post", async (req, res) => {
+  res.json(
+    await Post.find()
+      .populate("author", ["username"])
+      .sort({ createdAt: -1 })
+      .limit(20)
+  );
 });
 
 // Server port
