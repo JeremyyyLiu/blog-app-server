@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./src/models/User");
+const Post = require("./src/models/Post");
 require("dotenv").config();
 
 const app = express();
@@ -79,6 +80,17 @@ app.get("/profile", (req, res) => {
 // Logout controller
 app.post("/logout", (req, res) => {
   res.cookie("token", "").json("ok");
+});
+
+app.post("/post", async (req, res) => {
+  const { title, body } = req.body;
+
+  const postDocument = await Post.create({
+    title,
+    body,
+  });
+
+  res.json(postDocument);
 });
 
 // Server port
